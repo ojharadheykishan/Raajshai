@@ -1,25 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, Settings } from 'lucide-react'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
 
+interface Product {
+  id: number
+  name: string
+  category: string
+  price: number
+  originalPrice: number
+  stock: number
+  image: string
+  description?: string
+  ingredients?: string[]
+  benefits?: string[]
+}
+
 export default function AdminProducts() {
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Rose Sharbat', category: 'Sharbat', price: 299, originalPrice: 399, stock: 15, image: '/images/rose-sharbat.jpg' },
-    { id: 2, name: 'Kesar Sharbat', category: 'Sharbat', price: 449, originalPrice: 599, stock: 8, image: '/images/kesar-sharbat.jpg' },
-    { id: 3, name: 'Khus Sharbat', category: 'Sharbat', price: 279, originalPrice: 349, stock: 25, image: '/images/khus-sharbat.jpg' },
-    { id: 4, name: 'Mango Sharbat', category: 'Sharbat', price: 329, originalPrice: 429, stock: 12, image: '/images/mango-sharbat.jpg' },
-    { id: 5, name: 'Thandai Sharbat', category: 'Sharbat', price: 399, originalPrice: 499, stock: 18, image: '/images/thandai-sharbat.jpg' },
-    { id: 6, name: 'Jaljeera Sharbat', category: 'Sharbat', price: 199, originalPrice: 249, stock: 30, image: '/images/jaljeera-sharbat.jpg' },
-    { id: 7, name: 'Aam Panna Sharbat', category: 'Sharbat', price: 249, originalPrice: 319, stock: 22, image: '/images/aam-panna-sharbat.jpg' },
-    { id: 8, name: 'Bel Sharbat', category: 'Sharbat', price: 269, originalPrice: 339, stock: 16, image: '/images/bel-sharbat.jpg' },
-    { id: 9, name: 'Phalsa Sharbat', category: 'Sharbat', price: 319, originalPrice: 399, stock: 10, image: '/images/phalsa-sharbat.jpg' },
-    { id: 10, name: 'Sugarcane Sharbat', category: 'Sharbat', price: 179, originalPrice: 229, stock: 28, image: '/images/sugarcane-sharbat.jpg' },
-    { id: 11, name: 'Coconut Sharbat', category: 'Sharbat', price: 289, originalPrice: 369, stock: 20, image: '/images/coconut-sharbat.jpg' },
-    { id: 12, name: 'Mixed Fruit Sharbat', category: 'Sharbat', price: 349, originalPrice: 449, stock: 14, image: '/images/mixed-fruit-sharbat.jpg' }
-  ])
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   
   const [categories, setCategories] = useState(['Sharbat', 'Squash', 'Thandai', 'Crush'])
   const [editingProductId, setEditingProductId] = useState<number | null>(null)
@@ -35,58 +36,83 @@ export default function AdminProducts() {
     benefits: ''
   })
 
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      setProducts(data.products || [])
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const processedFormData = {
       ...formData,
       price: parseFloat(formData.price) || 0,
       originalPrice: parseFloat(formData.originalPrice) || 0,
-      stock: parseInt(formData.stock) || 0
+      stock: parseInt(formData.stock) || 0,
+      ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
+      benefits: formData.benefits ? formData.benefits.split(',').map(b => b.trim()) : []
     }
+    
     if (editingProductId) {
-      // Update existing product
-      setProducts(products.map(p => 
-        p.id === editingProductId ? { ...p, ...processedFormData } : p
-      ))
-      setEditingProductId(null)
-      setFormData({
-        name: '',
-        category: '',
-        price: '',
-        originalPrice: '',
-        stock: '',
-        image: '',
-        description: '',
-        ingredients: '',
-        benefits: ''
-      })
-    } else {
-      // Add new product
-      const newProduct = {
-        id: Date.now(),
-        ...processedFormData
+      // Update existing product via API
+      try {
+        const response = await fetch(`/api/products/${editingProductId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(processedFormData)
+        })
+        if (response.ok) {
+          fetchProducts()
+        }
+      } catch (error) {
+        console.error('Error updating product:', error)
       }
-      setProducts([...products, newProduct])
-      setFormData({
-        name: '',
-        category: '',
-        price: '',
-        originalPrice: '',
-        stock: '',
-        image: '',
-        description: '',
-        ingredients: '',
-        benefits: ''
-      })
+      setEditingProductId(null)
+    } else {
+      // Add new product via API
+      try {
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(processedFormData)
+        })
+        if (response.ok) {
+          fetchProducts()
+        }
+      } catch (error) {
+        console.error('Error adding product:', error)
+      }
     }
+    
+    setFormData({
+      name: '',
+      category: '',
+      price: '',
+      originalPrice: '',
+      stock: '',
+      image: '',
+      description: '',
+      ingredients: '',
+      benefits: ''
+    })
   }
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: Product) => {
     setEditingProductId(product.id)
     setFormData({
       name: product.name,
@@ -96,14 +122,23 @@ export default function AdminProducts() {
       stock: product.stock.toString(),
       image: product.image,
       description: product.description || '',
-      ingredients: product.ingredients || '',
-      benefits: product.benefits || ''
+      ingredients: Array.isArray(product.ingredients) ? product.ingredients.join(', ') : '',
+      benefits: Array.isArray(product.benefits) ? product.benefits.join(', ') : ''
     })
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(p => p.id !== id))
+      try {
+        const response = await fetch(`/api/products/${id}`, {
+          method: 'DELETE'
+        })
+        if (response.ok) {
+          fetchProducts()
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error)
+      }
     }
   }
 

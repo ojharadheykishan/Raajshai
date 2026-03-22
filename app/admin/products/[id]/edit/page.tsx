@@ -28,38 +28,33 @@ export default function EditProduct() {
   const categories = ['Sharbat', 'Squash', 'Thandai', 'Crush']
 
   useEffect(() => {
-    // Mock data - in real app, this would come from API
-    const mockProducts = [
-      { id: 1, name: 'Rose Sharbat', category: 'Sharbat', price: '299', originalPrice: '399', stock: '15', image: '/images/rose-sharbat.jpg', description: 'Premium quality rose sharbat made from fresh rose petals.', ingredients: 'Rose Petals, Sugar, Water, Citric Acid', benefits: 'Cooling effect, Rich in antioxidants, Natural flavor' },
-      { id: 2, name: 'Kesar Sharbat', category: 'Sharbat', price: '449', originalPrice: '599', stock: '8', image: '/images/kesar-sharbat.jpg', description: 'Luxurious saffron-infused sharbat with authentic Kashmiri kesar.', ingredients: 'Saffron, Sugar, Water, Cardamom', benefits: 'Boosts immunity, Enhances mood, Natural energy' },
-      { id: 3, name: 'Khus Sharbat', category: 'Sharbat', price: '279', originalPrice: '349', stock: '25', image: '/images/khus-sharbat.jpg', description: 'Refreshing vetiver root sharbat with natural cooling properties.', ingredients: 'Vetiver Root, Sugar, Water, Lemon', benefits: 'Natural coolant, Aids digestion, Refreshing taste' },
-      { id: 4, name: 'Mango Sharbat', category: 'Sharbat', price: '329', originalPrice: '429', stock: '12', image: '/images/mango-sharbat.jpg', description: 'Delicious mango-flavored sharbat made from Alphonso mangoes.', ingredients: 'Mango Pulp, Sugar, Water, Citric Acid', benefits: 'Rich in vitamins, Natural sweetness, Refreshing' },
-      { id: 5, name: 'Thandai Sharbat', category: 'Sharbat', price: '399', originalPrice: '499', stock: '18', image: '/images/thandai-sharbat.jpg', description: 'Traditional Holi special thandai with mixed nuts and spices.', ingredients: 'Almonds, Fennel, Rose Petals, Sugar, Pepper', benefits: 'Cooling effect, Rich in nutrients, Festive special' },
-      { id: 6, name: 'Jaljeera Sharbat', category: 'Sharbat', price: '199', originalPrice: '249', stock: '30', image: '/images/jaljeera-sharbat.jpg', description: 'Tangy and spicy jaljeera sharbat for instant refreshment.', ingredients: 'Cumin, Mint, Black Salt, Tamarind, Sugar', benefits: 'Aids digestion, Refreshing, Spicy flavor' },
-      { id: 7, name: 'Aam Panna Sharbat', category: 'Sharbat', price: '249', originalPrice: '319', stock: '22', image: '/images/aam-panna-sharbat.jpg', description: 'Raw mango sharbat with mint and spices.', ingredients: 'Raw Mango, Mint, Black Salt, Sugar, Cumin', benefits: 'Prevents heat stroke, Rich in vitamins, Cooling' },
-      { id: 8, name: 'Bel Sharbat', category: 'Sharbat', price: '269', originalPrice: '339', stock: '16', image: '/images/bel-sharbat.jpg', description: 'Wood apple sharbat with natural cooling properties.', ingredients: 'Wood Apple, Sugar, Water, Cardamom', benefits: 'Cooling effect, Aids digestion, Natural remedy' },
-      { id: 9, name: 'Phalsa Sharbat', category: 'Sharbat', price: '319', originalPrice: '399', stock: '10', image: '/images/phalsa-sharbat.jpg', description: 'Rare phalsa berry sharbat with unique tangy-sweet flavor.', ingredients: 'Phalsa Berries, Sugar, Water, Black Salt', benefits: 'Rich in antioxidants, Cooling, Unique taste' },
-      { id: 10, name: 'Sugarcane Sharbat', category: 'Sharbat', price: '179', originalPrice: '229', stock: '28', image: '/images/sugarcane-sharbat.jpg', description: 'Pure sugarcane juice sharbat with natural sweetness.', ingredients: 'Sugarcane Juice, Lemon, Ginger, Mint', benefits: 'Instant energy, Natural sweetener, Refreshing' },
-      { id: 11, name: 'Coconut Sharbat', category: 'Sharbat', price: '289', originalPrice: '369', stock: '20', image: '/images/coconut-sharbat.jpg', description: 'Tender coconut water sharbat with natural electrolytes.', ingredients: 'Coconut Water, Sugar, Lemon, Mint', benefits: 'Natural electrolytes, Hydrating, Refreshing' },
-      { id: 12, name: 'Mixed Fruit Sharbat', category: 'Sharbat', price: '349', originalPrice: '449', stock: '14', image: '/images/mixed-fruit-sharbat.jpg', description: 'Delightful blend of multiple fruits in one sharbat.', ingredients: 'Mixed Fruits, Sugar, Water, Citric Acid', benefits: 'Multiple vitamins, Natural flavors, Refreshing' }
-    ]
-
-    const product = mockProducts.find(p => p.id === Number(productId))
-    if (product) {
-      setFormData({
-        name: product.name,
-        category: product.category,
-        price: product.price,
-        originalPrice: product.originalPrice,
-        stock: product.stock,
-        image: product.image,
-        description: product.description,
-        ingredients: product.ingredients,
-        benefits: product.benefits
-      })
-    }
-    setLoading(false)
+    fetchProduct()
   }, [productId])
+
+  const fetchProduct = async () => {
+    try {
+      const response = await fetch(`/api/products/${productId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const product = data.product
+        setFormData({
+          name: product.name || '',
+          category: product.category || '',
+          price: product.price?.toString() || '',
+          originalPrice: product.originalPrice?.toString() || '',
+          stock: product.stock?.toString() || '',
+          image: product.image || '',
+          description: product.description || '',
+          ingredients: Array.isArray(product.ingredients) ? product.ingredients.join(', ') : '',
+          benefits: Array.isArray(product.benefits) ? product.benefits.join(', ') : ''
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -70,18 +65,56 @@ export default function EditProduct() {
     e.preventDefault()
     setSaving(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    alert('Product updated successfully!')
-    setSaving(false)
-    router.push('/admin/products')
+    try {
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          category: formData.category,
+          price: parseFloat(formData.price) || 0,
+          originalPrice: parseFloat(formData.originalPrice) || 0,
+          stock: parseInt(formData.stock) || 0,
+          image: formData.image,
+          description: formData.description,
+          ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
+          benefits: formData.benefits ? formData.benefits.split(',').map(b => b.trim()) : []
+        }),
+      })
+      
+      if (response.ok) {
+        alert('Product updated successfully!')
+        router.push('/admin/products')
+      } else {
+        alert('Failed to update product')
+      }
+    } catch (error) {
+      console.error('Error updating product:', error)
+      alert('Error updating product')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      alert('Product deleted successfully!')
-      router.push('/admin/products')
+      try {
+        const response = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+        })
+        
+        if (response.ok) {
+          alert('Product deleted successfully!')
+          router.push('/admin/products')
+        } else {
+          alert('Failed to delete product')
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error)
+        alert('Error deleting product')
+      }
     }
   }
 

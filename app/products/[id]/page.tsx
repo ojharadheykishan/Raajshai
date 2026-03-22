@@ -1,22 +1,68 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, ArrowLeft, Check, Minus, Plus } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { getProductById, products } from '@/data/products'
 import ProductCard from '@/components/ProductCard'
+
+interface Product {
+  id: number
+  name: string
+  price: number
+  originalPrice: number
+  image: string
+  description: string
+  category: string
+  ingredients: string[]
+  benefits: string[]
+  weight: string
+  inStock: boolean
+}
 
 export default function ProductDetail() {
   const params = useParams()
   const productId = Number(params.id)
-  const product = getProductById(productId)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [allProducts, setAllProducts] = useState<Product[]>([])
   const [cartItems, setCartItems] = useState<number[]>([])
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      const products = data.products || []
+      setAllProducts(products)
+      const foundProduct = products.find((p: Product) => p.id === productId)
+      setProduct(foundProduct || null)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex flex-col">
+        <Header cartCount={cartItems.length} />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
 
   if (!product) {
     return (
@@ -45,7 +91,7 @@ export default function ProductDetail() {
     setTimeout(() => setAddedToCart(false), 2000)
   }
 
-  const relatedProducts = products
+  const relatedProducts = allProducts
     .filter((p) => p.id !== product.id)
     .slice(0, 4)
 

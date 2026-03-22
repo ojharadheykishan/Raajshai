@@ -1,13 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import { products } from '@/data/products'
+
+interface Product {
+  id: number
+  name: string
+  price: number
+  originalPrice: number
+  image: string
+  description: string
+  category: string
+  ingredients: string[]
+  benefits: string[]
+  weight: string
+  inStock: boolean
+}
 
 export default function Home() {
   const [cartItems, setCartItems] = useState<number[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      setProducts(data.products || [])
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const addToCart = (productId: number) => {
     setCartItems([...cartItems, productId])
@@ -38,15 +69,25 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
             Our Sharbat Collection
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={addToCart}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No products available</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={addToCart}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
