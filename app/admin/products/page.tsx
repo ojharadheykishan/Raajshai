@@ -34,17 +34,23 @@ export default function AdminProducts() {
     benefits: ''
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const processedFormData = {
+      ...formData,
+      price: parseFloat(formData.price) || 0,
+      originalPrice: parseFloat(formData.originalPrice) || 0,
+      stock: parseInt(formData.stock) || 0
+    }
     if (editingProductId) {
       // Update existing product
       setProducts(products.map(p => 
-        p.id === editingProductId ? { ...p, ...formData } : p
+        p.id === editingProductId ? { ...p, ...processedFormData } : p
       ))
       setEditingProductId(null)
       setFormData({
@@ -62,7 +68,7 @@ export default function AdminProducts() {
       // Add new product
       const newProduct = {
         id: Date.now(),
-        ...formData
+        ...processedFormData
       }
       setProducts([...products, newProduct])
       setFormData({
@@ -250,7 +256,7 @@ export default function AdminProducts() {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                rows="3"
+                rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               />
             </div>
@@ -264,7 +270,7 @@ export default function AdminProducts() {
                   name="ingredients"
                   value={formData.ingredients}
                   onChange={handleInputChange}
-                  rows="2"
+                  rows={2}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -277,7 +283,7 @@ export default function AdminProducts() {
                   name="benefits"
                   value={formData.benefits}
                   onChange={handleInputChange}
-                  rows="2"
+                  rows={2}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>

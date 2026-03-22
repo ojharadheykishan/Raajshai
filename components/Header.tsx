@@ -1,8 +1,9 @@
 'use client'
 
-import { ShoppingCart, Menu, X, Settings } from 'lucide-react'
+import { ShoppingCart, Menu, X, Settings, Search, Heart } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Loader from './Loader'
 
 interface HeaderProps {
@@ -11,6 +12,15 @@ interface HeaderProps {
 
 export default function Header({ cartCount }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter()
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   return (
     <>
@@ -24,6 +34,20 @@ export default function Header({ cartCount }: HeaderProps) {
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-red-600">राजशाही शर्बत</span>
           </Link>
+
+          {/* Search Bar - Desktop */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
+          </form>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -43,6 +67,12 @@ export default function Header({ cartCount }: HeaderProps) {
 
           {/* Cart Icon */}
           <div className="flex items-center space-x-4">
+            {/* Wishlist Icon */}
+            <Link href="/wishlist" className="relative">
+              <Heart className="w-6 h-6 text-gray-700 hover:text-red-600 transition-colors" />
+            </Link>
+
+            {/* Cart Icon */}
             <Link href="/cart" className="relative">
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-red-600 transition-colors" />
               {cartCount > 0 && (
@@ -73,6 +103,20 @@ export default function Header({ cartCount }: HeaderProps) {
             </button>
           </div>
         </div>
+
+        {/* Mobile Search Bar */}
+        <form onSubmit={handleSearch} className="md:hidden py-2">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          </div>
+        </form>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
