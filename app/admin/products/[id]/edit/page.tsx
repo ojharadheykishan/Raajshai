@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Save, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 export default function EditProduct() {
   const router = useRouter()
@@ -200,51 +201,10 @@ export default function EditProduct() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
-                </label>
-                <input
-                  type="text"
-                  name="image"
+                <ImageUpload
                   value={formData.image}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  placeholder="https://example.com/image.jpg"
+                  onChange={(url) => setFormData({ ...formData, image: url })}
                 />
-                <div className="mt-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Or Upload Image
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          // In a real app, this would upload to Cloudinary
-                          // For now, we'll just show a preview
-                          const reader = new FileReader()
-                          reader.onloadend = () => {
-                            setFormData({ ...formData, image: reader.result as string })
-                          }
-                          reader.readAsDataURL(file)
-                        }
-                      }}
-                      className="hidden"
-                      id="image-upload"
-                    />
-                    <label
-                      htmlFor="image-upload"
-                      className="cursor-pointer px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300"
-                    >
-                      Choose File
-                    </label>
-                    <span className="text-sm text-gray-500">
-                      {formData.image ? 'Image selected' : 'No file chosen'}
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
             

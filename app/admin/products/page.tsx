@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Settings } from 'lucide-react'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([
@@ -234,16 +235,9 @@ export default function AdminProducts() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
-                </label>
-                <input
-                  type="text"
-                  name="image"
+                <ImageUpload
                   value={formData.image}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  placeholder="https://example.com/image.jpg"
+                  onChange={(url) => setFormData({ ...formData, image: url })}
                 />
               </div>
             </div>
