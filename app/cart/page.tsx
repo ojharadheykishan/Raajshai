@@ -8,9 +8,22 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getProductById } from '@/data/products'
 
+interface CustomizationSelection {
+  optionId: string;
+  optionName: string;
+  type: string;
+  valueId?: string;
+  valueLabel?: string;
+  textValue?: string;
+  numberValue?: number;
+  priceAdjustment: number;
+}
+
 interface CartItem {
   id: number
   quantity: number
+  customizations?: CustomizationSelection[]
+  totalPrice?: number
 }
 
 export default function Cart() {
@@ -35,12 +48,17 @@ export default function Cart() {
   const cartProducts = cartItems
     .map((item) => {
       const product = getProductById(item.id)
-      return product ? { ...product, quantity: item.quantity } : null
+      return product ? { 
+        ...product, 
+        quantity: item.quantity,
+        customizations: item.customizations || [],
+        totalPrice: item.totalPrice || product.price
+      } : null
     })
     .filter(Boolean)
 
   const subtotal = cartProducts.reduce(
-    (sum, item) => sum + (item?.price || 0) * (item?.quantity || 0),
+    (sum, item) => sum + (item?.totalPrice || item?.price || 0) * (item?.quantity || 0),
     0
   )
 
@@ -112,13 +130,40 @@ export default function Cart() {
                           <p className="text-gray-600 text-sm mt-1">
                             {item?.weight}
                           </p>
+                          
+                          {/* Customizations */}
+                          {item?.customizations && item.customizations.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {item.customizations.map((custom, idx) => (
+                                <div key={idx} className="text-xs text-gray-600">
+                                  <span className="font-medium">{custom.optionName}:</span>{' '}
+                                  {custom.type === 'text' ? custom.textValue :
+                                   custom.type === 'number' ? custom.numberValue :
+                                   custom.valueLabel}
+                                  {custom.priceAdjustment !== 0 && (
+                                    <span className={`ml-1 ${
+                                      custom.priceAdjustment > 0 ? 'text-green-600' : 'text-red-600'
+                                    }`}>
+                                      ({custom.priceAdjustment > 0 ? '+' : ''}{custom.priceAdjustment})
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
                           <div className="flex items-center gap-4 mt-2">
                             <span className="text-red-600 font-bold">
-                              ₹{item?.price}
+                              ₹{item?.totalPrice || item?.price}
                             </span>
-                            {item?.originalPrice && item.originalPrice > item.price && (
+                            {item?.originalPrice && item.originalPrice > (item?.totalPrice || item?.price) && (
                               <span className="text-gray-500 line-through text-sm">
                                 ₹{item.originalPrice}
+                              </span>
+                            )}
+                            {item?.customizations && item.customizations.length > 0 && (item?.totalPrice || 0) > (item?.price || 0) && (
+                              <span className="text-xs text-green-600">
+                                +₹{(item?.totalPrice || 0) - (item?.price || 0)} for customizations
                               </span>
                             )}
                           </div>

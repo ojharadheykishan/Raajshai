@@ -1,0 +1,120 @@
+{
+  "options": [
+    {
+      "id": "opt_color_1",
+      "product_id": "1",
+      "name": "Bottle Color",
+      "type": "color",
+      "required": false,
+      "description": "Choose your preferred bottle color",
+      "price_adjustment": 0,
+      "sort_order": 0,
+      "values": [
+        {
+          "id": "val_red",
+          "value": "red",
+          "label": "Red",
+          "color_code": "#FF0000",
+          "price_adjustment": 0,
+          "in_stock": true,
+          "sort_order": 0
+        },
+        {
+          "id": "val_blue",
+          "value": "blue",
+          "label": "Blue",
+          "color_code": "#0000FF",
+          "price_adjustment": 0,
+          "in_stock": true,
+          "sort_order": 1
+        },
+        {
+          "id": "val_green",
+          "value": "green",
+          "label": "Green",
+          "color_code": "#00FF00",
+          "price_adjustment": 0,
+          "in_stock": true,
+          "sort_order": 2
+        }
+      ],
+      "created_at": "2026-03-25T02:56:00.000Z",
+      "updated_at": "2026-03-25T02:56:00.000Z"
+    },
+    {
+      "id": "opt_size_1",
+      "product_id": "1",
+      "name": "Bottle Size",
+      "type": "select",
+      "required": true,
+      "description": "Select your preferred bottle size",
+      "price_adjustment": 0,
+      "sort_order": 1,
+      "values": [
+        {
+          "id": "val_small",
+          "value": "250ml",
+          "label": "Small (250ml)",
+          "price_adjustment": -50,
+          "in_stock": true,
+          "sort_order": 0
+        },
+        {
+          "id": "val_medium",
+          "value": "500ml",
+          "label": "Medium (500ml)",
+          "price_adjustment": 0,
+          "in_stock": true,
+          "sort_order": 1
+        },
+        {
+          "id": "val_large",
+          "value": "750ml",
+          "label": "Large (750ml)",
+          "price_adjustment": 50,
+          "in_stock": true,
+          "sort_order": 2
+        },
+        {
+          "id": "val_xlarge",
+          "value": "1000ml",
+          "label": "Extra Large (1L)",
+          "price_adjustment": 100,
+          "in_stock": false,
+          "sort_order": 3
+        }
+      ],
+      "created_at": "2026-03-25T02:56:00.000Z",
+      "updated_at": "2026-03-25T02:56:00.000Z"
+    },
+    {
+      "id": "opt_engraving_1",
+      "product_id": "1",
+      "name": "Custom Engraving",
+      "type": "text",
+      "required": false,
+      "description": "Add a personalized message (max 50 characters)",
+      "max_length": 50,
+      "price_adjustment": 99,
+      "sort_order": 2,
+      "values": [],
+      "created_at": "2026-03-25T02:56:00.000Z",
+      "updated_at": "2026-03-25T02:56:00.000Z"
+    },
+    {
+      "id": "opt_quantity_1",
+      "product_id": "1",
+      "name": "Gift Quantity",
+      "type": "number",
+      "required": false,
+      "description": "Number of bottles for gifting",
+      "min_value": 1,
+      "max_value": 10,
+      "price_adjustment": 0,
+      "sort_order": 3,
+      "values": [],
+      "created_at": "2026-03-25T02:56:00.000Z",
+      "updated_at": "2026-03-25T02:56:00.000Z"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import { ShoppingCart, ArrowLeft, Check, Minus, Plus } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
+import ProductCustomization from '@/components/ProductCustomization'
 
 interface Product {
   id: number
@@ -23,6 +24,17 @@ interface Product {
   inStock: boolean
 }
 
+interface CustomizationSelection {
+  optionId: string;
+  optionName: string;
+  type: string;
+  valueId?: string;
+  valueLabel?: string;
+  textValue?: string;
+  numberValue?: number;
+  priceAdjustment: number;
+}
+
 export default function ProductDetail() {
   const params = useParams()
   const productId = Number(params.id)
@@ -32,6 +44,8 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [customizationSelections, setCustomizationSelections] = useState<CustomizationSelection[]>([])
+  const [totalPrice, setTotalPrice] = useState(0)
 
   useEffect(() => {
     fetchProducts()
@@ -81,12 +95,21 @@ export default function ProductDetail() {
     )
   }
 
+  const handleCustomizationChange = (selections: CustomizationSelection[], total: number) => {
+    setCustomizationSelections(selections)
+    setTotalPrice(total)
+  }
+
   const addToCart = () => {
     const newItems = []
     for (let i = 0; i < quantity; i++) {
-      newItems.push(product.id)
+      newItems.push({
+        productId: product.id,
+        customizations: customizationSelections,
+        totalPrice: totalPrice
+      })
     }
-    setCartItems([...cartItems, ...newItems])
+    setCartItems([...cartItems, ...newItems.map(item => item.productId)])
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
   }
@@ -150,10 +173,17 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold text-red-600">₹{product.price}</span>
+                <span className="text-3xl font-bold text-red-600">
+                  ₹{totalPrice || product.price}
+                </span>
                 {product.originalPrice > product.price && (
                   <span className="text-xl text-gray-500 line-through">
                     ₹{product.originalPrice}
+                  </span>
+                )}
+                {customizationSelections.length > 0 && totalPrice > product.price && (
+                  <span className="text-sm text-green-600 font-medium">
+                    +₹{totalPrice - product.price} for customizations
                   </span>
                 )}
               </div>
@@ -194,6 +224,15 @@ export default function ProductDetail() {
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+
+              {/* Product Customization */}
+              <div className="mb-6">
+                <ProductCustomization
+                  productId={product.id.toString()}
+                  basePrice={product.price}
+                  onCustomizationChange={handleCustomizationChange}
+                />
               </div>
 
               {/* Add to Cart Button */}
