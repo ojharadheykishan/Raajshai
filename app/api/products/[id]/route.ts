@@ -16,6 +16,7 @@ interface Product {
   benefits: string[]
   weight: string
   inStock: boolean
+  visible?: boolean
 }
 
 function readProducts(): Product[] {
@@ -58,19 +59,20 @@ export async function PUT(
       )
     }
     
-    products[productIndex] = {
-      ...products[productIndex],
-      name: body.name || products[productIndex].name,
-      price: body.price !== undefined ? body.price : products[productIndex].price,
-      originalPrice: body.originalPrice !== undefined ? body.originalPrice : products[productIndex].originalPrice,
-      image: body.image || products[productIndex].image,
-      description: body.description || products[productIndex].description,
-      category: body.category || products[productIndex].category,
-      ingredients: body.ingredients || products[productIndex].ingredients,
-      benefits: body.benefits || products[productIndex].benefits,
-      weight: body.weight || products[productIndex].weight,
-      inStock: body.inStock !== undefined ? body.inStock : products[productIndex].inStock
-    }
+     products[productIndex] = {
+       ...products[productIndex],
+       name: body.name || products[productIndex].name,
+       price: body.price !== undefined ? body.price : products[productIndex].price,
+       originalPrice: body.originalPrice !== undefined ? body.originalPrice : products[productIndex].originalPrice,
+       image: body.image || products[productIndex].image,
+       description: body.description || products[productIndex].description,
+       category: body.category || products[productIndex].category,
+       ingredients: body.ingredients || products[productIndex].ingredients,
+       benefits: body.benefits || products[productIndex].benefits,
+       weight: body.weight || products[productIndex].weight,
+       inStock: body.inStock !== undefined ? body.inStock : products[productIndex].inStock,
+       visible: body.visible !== undefined ? body.visible : products[productIndex].visible
+     }
     
     writeProducts(products)
     

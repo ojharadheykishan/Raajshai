@@ -11,8 +11,7 @@
       "ingredients": ["Rose Petals", "Sugar", "Water", "Citric Acid"],
       "benefits": ["Cooling effect", "Rich in antioxidants", "Natural flavor"],
       "weight": "750ml",
-      "inStock": true, "visible": true,
-      "visible": true
+      "inStock": true
     },
     {
       "id": 2,
@@ -25,7 +24,7 @@
       "ingredients": ["Saffron", "Sugar", "Water", "Cardamom"],
       "benefits": ["Boosts immunity", "Enhances mood", "Natural energy"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 3,
@@ -38,7 +37,7 @@
       "ingredients": ["Vetiver Root", "Sugar", "Water", "Lemon"],
       "benefits": ["Natural coolant", "Aids digestion", "Refreshing taste"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 4,
@@ -51,7 +50,7 @@
       "ingredients": ["Mango Pulp", "Sugar", "Water", "Citric Acid"],
       "benefits": ["Rich in vitamins", "Natural sweetness", "Refreshing"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 5,
@@ -64,7 +63,7 @@
       "ingredients": ["Almonds", "Fennel", "Rose Petals", "Sugar", "Pepper"],
       "benefits": ["Cooling effect", "Rich in nutrients", "Festive special"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 6,
@@ -77,7 +76,7 @@
       "ingredients": ["Cumin", "Mint", "Black Salt", "Tamarind", "Sugar"],
       "benefits": ["Aids digestion", "Refreshing", "Spicy flavor"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 7,
@@ -90,7 +89,7 @@
       "ingredients": ["Raw Mango", "Mint", "Black Salt", "Sugar", "Cumin"],
       "benefits": ["Prevents heat stroke", "Rich in vitamins", "Cooling"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 8,
@@ -103,7 +102,7 @@
       "ingredients": ["Wood Apple", "Sugar", "Water", "Cardamom"],
       "benefits": ["Cooling effect", "Aids digestion", "Natural remedy"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 9,
@@ -116,7 +115,7 @@
       "ingredients": ["Phalsa Berries", "Sugar", "Water", "Black Salt"],
       "benefits": ["Rich in antioxidants", "Cooling", "Unique taste"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 10,
@@ -129,7 +128,7 @@
       "ingredients": ["Sugarcane Juice", "Lemon", "Ginger", "Mint"],
       "benefits": ["Instant energy", "Natural sweetener", "Refreshing"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 11,
@@ -142,7 +141,7 @@
       "ingredients": ["Coconut Water", "Sugar", "Lemon", "Mint"],
       "benefits": ["Natural electrolytes", "Hydrating", "Refreshing"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     },
     {
       "id": 12,
@@ -155,7 +154,7 @@
       "ingredients": ["Mixed Fruits", "Sugar", "Water", "Citric Acid"],
       "benefits": ["Multiple vitamins", "Natural flavors", "Refreshing"],
       "weight": "750ml",
-      "inStock": true, "visible": true
+      "inStock": true
     }
   ]
 }

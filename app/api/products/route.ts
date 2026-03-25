@@ -16,6 +16,7 @@ interface Product {
   benefits: string[]
   weight: string
   inStock: boolean
+  visible?: boolean
 }
 
 function readProducts(): Product[] {
@@ -68,7 +69,8 @@ export async function POST(request: Request) {
       ingredients: body.ingredients || [],
       benefits: body.benefits || [],
       weight: body.weight || '750ml',
-      inStock: body.inStock !== undefined ? body.inStock : true
+      inStock: body.inStock !== undefined ? body.inStock : true,
+      visible: body.visible !== undefined ? body.visible : true
     }
     
     products.push(newProduct)

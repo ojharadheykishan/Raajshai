@@ -16,6 +16,7 @@ interface Product {
   description?: string
   ingredients?: string[]
   benefits?: string[]
+  visible?: boolean
 }
 
 export default function AdminProducts() {
@@ -44,7 +45,12 @@ export default function AdminProducts() {
     try {
       const response = await fetch('/api/products')
       const data = await response.json()
-      setProducts(data.products || [])
+      // Ensure each product has a visible property (default to true for existing products)
+      const productsWithVisibility = (data.products || []).map((product: any) => ({
+        ...product,
+        visible: product.visible !== undefined ? product.visible : true
+      }))
+      setProducts(productsWithVisibility)
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
@@ -127,20 +133,43 @@ export default function AdminProducts() {
     })
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        const response = await fetch(`/api/products/${id}`, {
-          method: 'DELETE'
-        })
-        if (response.ok) {
-          fetchProducts()
-        }
-      } catch (error) {
-        console.error('Error deleting product:', error)
-      }
-    }
-  }
+    const handleDelete = async (id: number) => {
+     if (window.confirm('Are you sure you want to delete this product?')) {
+       try {
+         const response = await fetch(`/api/products/${id}`, {
+           method: 'DELETE'
+         })
+         if (response.ok) {
+           fetchProducts()
+         }
+       } catch (error) {
+         console.error('Error deleting product:', error)
+       }
+     }
+   }
+
+   const toggleVisibility = async (id: number) => {
+     try {
+       // First get the current product to toggle its visibility
+       const product = products.find(p => p.id === id)
+       if (!product) return
+       
+       const response = await fetch(`/api/products/${id}`, {
+         method: 'PUT',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           ...product,
+           visible: !product.visible
+         })
+       })
+       
+       if (response.ok) {
+         fetchProducts()
+       }
+     } catch (error) {
+       console.error('Error toggling product visibility:', error)
+     }
+   }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -406,19 +435,29 @@ export default function AdminProducts() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                      <Link 
-                        href={`/admin/products/${product.id}/edit`} 
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        <Settings className="w-4 h-4" />
-                      </Link>
-                      <button 
-                        onClick={() => handleDelete(product.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
+                       <Link 
+                         href={`/admin/products/${product.id}/edit`} 
+                         className="text-indigo-600 hover:text-indigo-900"
+                       >
+                         <Settings className="w-4 h-4" />
+                       </Link>
+                       <button 
+                         onClick={() => handleDelete(product.id)}
+                         className="text-red-600 hover:text-red-900"
+                       >
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                       <button 
+                         onClick={() => toggleVisibility(product.id)}
+                         className={`text-${product.visible ? 'green-600' : 'red-600'} hover:text-${product.visible ? 'green-900' : 'red-900'}`}
+                       >
+                         {product.visible ? (
+                           <span className="mr-1">👁️</span> Hide
+                         ) : (
+                           <span className="mr-1">👁️‍🗨️</span> Show
+                         )}
+                       </button>
+                     </td>
                   </tr>
                 ))}
               </tbody>
